@@ -16,8 +16,8 @@ services:
     image: postgres:${POSTGRES_TAG}
     volumes:
       - postgres_data:${POSTGRES_TARGET_DATA_VOLUME}
-    #restart: always
-    restart: on-failure
+    restart: always
+    #restart: on-failure
     networks:
       - kong-net
     environment:
@@ -38,7 +38,7 @@ services:
   kong-migration:
     image: kong:${KONG_TAG}
     #command: "kong migrations bootstrap"
-    entrypoint: sh -c "sleep 10 && kong migrations bootstrap -v"
+    entrypoint: sh -c "sleep 20 && kong migrations bootstrap -v"
     restart: on-failure
     environment:
       KONG_DATABASE: ${KONG_DATABASE}
@@ -76,15 +76,17 @@ services:
       KONG_ADMIN_ACCESS_LOG: ${KONG_ADMIN_ACCESS_LOG}
       KONG_PROXY_ERROR_LOG: ${KONG_PROXY_ERROR_LOG}
       KONG_ADMIN_ERROR_LOG: ${KONG_ADMIN_ERROR_LOG}
+      KONG_PROXY_LISTEN: ${KONG_PROXY_LISTEN}
+      KONG_PROXY_LISTEN_SSL: ${KONG_PROXY_LISTEN_SSL}
       KONG_ADMIN_LISTEN: ${KONG_ADMIN_LISTEN}
     depends_on:
       - kong-migration
       - kong-database
     ports:
-      - 8000:8000
-      - 8443:8443
+      - 8000:8000      
       - 8001:8001
-      - 8444:8444
+      #- 8443:8443
+      #- 8444:8444
 #    healthcheck:
 #      test: ["CMD", "curl", "-f", "http://kong:8001"]
 #      interval: 10s
@@ -116,11 +118,13 @@ services:
   #######################################
   konga:
     image: pantsel/konga:next
-    restart: on-failure
+    restart: always
     networks:
         - kong-net
     environment:
       DB_ADAPTER: ${KONG_DATABASE}
+      #DB_URI: postgresql://kong:${KONG_DB_PASSWORD:-kong}@kong-database:5432/konga_db
+      DB_URI: postgresql://kong:${KONG_DB_PASSWORD}@kong-database:5432/konga_db
       DB_HOST: ${KONGA_DB_HOST}
       DB_PORT: ${KONGA_DB_PORT}
       DB_DATABASE: ${KONGA_DB_NAME}
