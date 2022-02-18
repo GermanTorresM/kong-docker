@@ -95,16 +95,16 @@ services:
   #######################################
   # Konga database prepare
   #######################################
-#  konga-prepare:
-#    image: pantsel/konga:latest
-#    command: "-c prepare -a postgres -u postgresql://kong@kong-database:5432/konga_db"
-#    restart: on-failure
-#    networks:
-#      - kong-net
-#    links:
-#      - kong-database
-#    depends_on:
-#      - kong-database
+  konga-prepare:
+    image: pantsel/konga:next
+    command: "-c prepare -a postgres -u postgresql://kong:${KONG_DB_PASSWORD}@kong-database:5432/konga_db"
+    restart: on-failure
+    networks:
+      - kong-net
+    links:
+      - kong-database
+    depends_on:
+      - kong-database
 #    healthcheck:
 #      test: ["CMD", "pg_isready", "-U", "kong"]
 #      interval: 10s
@@ -115,7 +115,7 @@ services:
   # Konga: Kong GUI
   #######################################
   konga:
-    image: pantsel/konga:latest
+    image: pantsel/konga:next
     restart: on-failure
     networks:
         - kong-net
