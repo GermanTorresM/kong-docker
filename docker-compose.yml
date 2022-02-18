@@ -14,10 +14,10 @@ services:
   #######################################
   kong-database:
     image: postgres:${POSTGRES_TAG}
+    container_name: kong-database
     volumes:
       - postgres_data:${POSTGRES_TARGET_DATA_VOLUME}
     restart: always
-    #restart: on-failure
     networks:
       - kong-net
     environment:
@@ -37,7 +37,6 @@ services:
   #######################################
   kong-migration:
     image: kong:${KONG_TAG}
-    #command: "kong migrations bootstrap"
     entrypoint: sh -c "sleep 20 && kong migrations bootstrap -v"
     restart: on-failure
     environment:
@@ -63,6 +62,7 @@ services:
   #######################################
   kong:
     image: kong:${KONG_TAG}
+    container_name: kong
     restart: on-failure
     networks:
       - kong-net
@@ -118,6 +118,7 @@ services:
   #######################################
   konga:
     image: pantsel/konga:next
+    container_name: konga
     restart: always
     networks:
         - kong-net
