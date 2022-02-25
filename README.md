@@ -9,8 +9,6 @@ $ docker-compose up
 ```
 Para escalar Kong (ej. a tres instencias) ejecute:
 
-To scale Kong (ie, to three instances) execute:
-
 ```shell
 $ docker-compose scale kong=3
 ```
